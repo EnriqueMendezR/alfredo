@@ -5,11 +5,12 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [message, setMessage] = useState('');
 
   return (
     <>
       <section id="center">
+        {message && <p>{message}</p>}
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
           <img src={reactLogo} className="framework" alt="React logo" />
@@ -23,10 +24,10 @@ function App() {
         </div>
         <button
           className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => setMessage("Hello, user!")}
         >
-          Count is {count}
-        </button>
+          Click me
+          </button>
       </section>
 
       <div className="ticks"></div>
