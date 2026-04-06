@@ -2,16 +2,18 @@
     "manifest_version" : 3,
     "version": "1.0.0",
     "name": "Alfredo",
-    "action": {
-        "default_popup": "index.html"
-    },
     "permissions": [
-        "scripting"
+        "sidePanel"
     ],
-    "host_permissions":[
-        "http://*/*",
-        "https://*/*"
-    ],
+    "side_panel": {
+        "default_path": "index.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action" : {
+        "default_title": "Alfredo"
+    },
     "icons": {
         "32": "favicon.svg"
     }
