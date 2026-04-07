@@ -1,121 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
 
+interface Message {
+  id: number
+  text: string
+  sent: boolean
+  time: string
+}
+
+const messages: Message[] = [
+  { id: 1, text: "Hey! Are you free to catch up today?", sent: false, time: "10:21 AM" },
+  { id: 2, text: "Yeah, what's up?", sent: true, time: "10:22 AM" },
+  { id: 3, text: "I've been working on the new designs and wanted your thoughts.", sent: false, time: "10:23 AM" },
+  { id: 4, text: "Oh nice! Send them over, I'd love to take a look.", sent: true, time: "10:24 AM" },
+  { id: 5, text: "Just sent them. The main change is the color palette — went for something warmer this time.", sent: false, time: "10:26 AM" },
+  { id: 6, text: "These look really good. The warm tones feel much more inviting.", sent: true, time: "10:28 AM" },
+  { id: 7, text: "Glad you think so! I was going back and forth on it for a while.", sent: false, time: "10:29 AM" },
+  { id: 8, text: "The typography is also a big improvement. What font is that?", sent: true, time: "10:30 AM" },
+  { id: 9, text: "Geist! It reads really cleanly at smaller sizes too.", sent: false, time: "10:31 AM" },
+  { id: 10, text: "Noted, might steal that for my next project 😄", sent: true, time: "10:32 AM" },
+]
+
 function App() {
-  const [message, setMessage] = useState('');
-
   return (
-    <>
-      <section id="center">
-        {message && <p>{message}</p>}
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="chat-container">
+      <header className="chat-header">
+        <div className="avatar">A</div>
+        <div className="chat-header-info">
+          <span className="chat-name">Alfredo</span>
+          <span className="chat-status">Online</span>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setMessage("Hello, user!")}
-        >
-          Click me
-          </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="chat-messages">
+        <div className="date-divider">Today</div>
+        {messages.map(msg => (
+          <div key={msg.id} className={`message ${msg.sent ? 'sent' : 'received'}`}>
+            <div className="bubble">{msg.text}</div>
+            <span className="time">{msg.time}</span>
+          </div>
+        ))}
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
+      <footer className="chat-input-bar">
+        <button className="attach-btn" aria-label="Attach file">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
           </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        </button>
+        <div className="input-field" aria-placeholder="Type a message…">
+          <span className="input-placeholder">Type a message…</span>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
+        <button className="send-btn" aria-label="Send message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5" />
+            <polyline points="5 12 12 5 19 12" />
           </svg>
-          <h2>Connect with us</h2>
-          <p>Join the en community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        </button>
+      </footer>
+    </div>
   )
 }
 
