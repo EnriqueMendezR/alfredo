@@ -15,6 +15,9 @@
         "default_title": "Alfredo"
     },
     "icons": {
-        "32": "favicon.svg"
+        "16": "icon-128.png",
+        "32": "icon-128.png",
+        "48": "icon-128.png",
+        "128": "icon-128.png"
     }
 }
