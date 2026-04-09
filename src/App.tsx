@@ -48,6 +48,7 @@ function App() {
   const [taskDescription, setTaskDescription] = useState('')
   const [taskDuration, setTaskDuration] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
   const [, setTick] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -81,6 +82,7 @@ function App() {
     setTaskDescription('')
     setTaskDuration('')
     setShowForm(false)
+    setEditingTaskId(null)
   }
 
   async function addTask() {
@@ -105,6 +107,37 @@ function App() {
     resetForm()
   }
 
+  async function saveTask() {
+    if (!taskTitle.trim() || editingTaskId === null) return
+    const minutes = parseInt(taskDuration, 10)
+    const hasDuration = !isNaN(minutes) && minutes > 0
+    if (hasDuration && Notification.permission === 'default') {
+      await Notification.requestPermission()
+    }
+    setTasks(prev =>
+      prev.map(t => {
+        if (t.id !== editingTaskId) return t
+        return {
+          ...t,
+          title: taskTitle.trim(),
+          description: taskDescription.trim(),
+          duration: hasDuration ? minutes : null,
+          timerEnd: hasDuration ? Date.now() + minutes * 60 * 1000 : null,
+          notified: hasDuration ? false : t.notified,
+        }
+      })
+    )
+    resetForm()
+  }
+
+  function openEditForm(task: Task) {
+    setTaskTitle(task.title)
+    setTaskDescription(task.description)
+    setTaskDuration(task.duration !== null ? String(task.duration) : '')
+    setEditingTaskId(task.id)
+    setShowForm(true)
+  }
+
   function toggleComplete(id: number) {
     setTasks(prev =>
       prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
@@ -117,7 +150,7 @@ function App() {
         <div className="avatar">A</div>
         <div className="chat-header-info">
           <span className="chat-name">Alfredo</span>
-          <span className="chat-status">Online</span>
+          <span className="chat-status">Always at your service</span>
         </div>
       </header>
 
@@ -205,8 +238,12 @@ function App() {
                 <button className="task-cancel-btn" onClick={resetForm}>
                   Cancel
                 </button>
-                <button className="task-add-btn" onClick={addTask} disabled={!taskTitle.trim()}>
-                  Add Task
+                <button
+                  className="task-add-btn"
+                  onClick={editingTaskId !== null ? saveTask : addTask}
+                  disabled={!taskTitle.trim()}
+                >
+                  {editingTaskId !== null ? 'Save Changes' : 'Add Task'}
                 </button>
               </div>
             </div>
@@ -248,6 +285,18 @@ function App() {
                   <div className="task-item-body">
                     <div className="task-item-top">
                       <span className="task-item-title">{task.title}</span>
+                      {!task.completed && (
+                        <button
+                          className="task-edit-btn"
+                          onClick={() => openEditForm(task)}
+                          aria-label="Edit task"
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                        </button>
+                      )}
                       {msLeft !== null && (
                         <span className={`task-timer-badge${isUrgent ? ' task-timer-badge--urgent' : ''}${isExpired ? ' task-timer-badge--expired' : ''}`}>
                           {!isExpired && (
