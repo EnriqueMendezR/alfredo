@@ -42,7 +42,7 @@ function formatTimeLeft(ms: number): string {
 }
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'tasks'>('chat')
+  const [activeTab, setActiveTab] = useState<'chat' | 'tasks' | 'learn'>('chat')
   const [tasks, setTasks] = useState<Task[]>([])
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDescription, setTaskDescription] = useState('')
@@ -166,6 +166,12 @@ function App() {
           onClick={() => setActiveTab('tasks')}
         >
           Tasks
+        </button>
+        <button
+          className={`tab-btn${activeTab === 'learn' ? ' tab-btn--active' : ''}`}
+          onClick={() => setActiveTab('learn')}
+        >
+          Learn
         </button>
       </nav>
 
@@ -317,6 +323,10 @@ function App() {
               )
             })}
           </ul>
+        </main>
+      )}
+      {activeTab === 'learn' && (
+        <main className="learn-view">
         </main>
       )}
     </div>
