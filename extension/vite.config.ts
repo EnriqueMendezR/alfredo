@@ -4,6 +4,9 @@ import { resolve } from 'path'
 import fs from 'fs'
 
 export default defineConfig({
+  resolve: {
+    conditions: ['import', 'module', 'browser', 'default'],
+  },
   plugins: [
     react(),
     {

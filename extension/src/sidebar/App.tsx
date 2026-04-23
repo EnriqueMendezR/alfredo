@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { useChat } from '@ai-sdk/react'
 import './App.css'
-
-interface Message {
-  id: number
-  text: string
-  sent: boolean
-  time: string
-}
 
 interface Task {
   id: number
@@ -17,19 +11,6 @@ interface Task {
   timerEnd: number | null
   notified: boolean
 }
-
-const messages: Message[] = [
-  { id: 1, text: "Hey! Are you free to catch up today?", sent: false, time: "10:21 AM" },
-  { id: 2, text: "Yeah, what's up?", sent: true, time: "10:22 AM" },
-  { id: 3, text: "I've been working on the new designs and wanted your thoughts.", sent: false, time: "10:23 AM" },
-  { id: 4, text: "Oh nice! Send them over, I'd love to take a look.", sent: true, time: "10:24 AM" },
-  { id: 5, text: "Just sent them. The main change is the color palette — went for something warmer this time.", sent: false, time: "10:26 AM" },
-  { id: 6, text: "These look really good. The warm tones feel much more inviting.", sent: true, time: "10:28 AM" },
-  { id: 7, text: "Glad you think so! I was going back and forth on it for a while.", sent: false, time: "10:29 AM" },
-  { id: 8, text: "The typography is also a big improvement. What font is that?", sent: true, time: "10:30 AM" },
-  { id: 9, text: "Geist! It reads really cleanly at smaller sizes too.", sent: false, time: "10:31 AM" },
-  { id: 10, text: "Noted, might steal that for my next project 😄", sent: true, time: "10:32 AM" },
-]
 
 function formatTimeLeft(ms: number): string {
   if (ms <= 0) return 'Time\'s up'
@@ -51,6 +32,15 @@ function App() {
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
   const [, setTick] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const { messages: chatMessages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+    api: `${import.meta.env.VITE_API_URL}/api/chat`,
+  })
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [chatMessages])
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -178,31 +168,60 @@ function App() {
       {activeTab === 'chat' && (
         <>
           <main className="chat-messages">
-            <div className="date-divider">Today</div>
-            {messages.map(msg => (
-              <div key={msg.id} className={`message ${msg.sent ? 'sent' : 'received'}`}>
-                <div className="bubble">{msg.text}</div>
-                <span className="time">{msg.time}</span>
+            {chatMessages.length === 0 && !error && (
+              <p className="chat-empty">Send a message to start a conversation.</p>
+            )}
+            {error && (
+              <div className="message received">
+                <div className="bubble" style={{ color: 'red' }}>
+                  Error: {error.message}
+                </div>
+              </div>
+            )}
+            {chatMessages.map(msg => (
+              <div key={msg.id} className={`message ${msg.role === 'user' ? 'sent' : 'received'}`}>
+                <div className="bubble">{msg.content}</div>
+                {msg.createdAt && (
+                  <span className="time">
+                    {msg.createdAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
               </div>
             ))}
+            {isLoading && chatMessages.at(-1)?.role !== 'assistant' && (
+              <div className="message received">
+                <div className="bubble">...</div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </main>
 
-          <footer className="chat-input-bar">
-            <button className="attach-btn" aria-label="Attach file">
+          <form className="chat-input-bar" onSubmit={handleSubmit}>
+            <button type="button" className="attach-btn" aria-label="Attach file">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
               </svg>
             </button>
-            <div className="input-field" aria-placeholder="Type a message…">
-              <span className="input-placeholder">Type a message…</span>
-            </div>
-            <button className="send-btn" aria-label="Send message">
+            <input
+              className="input-field"
+              placeholder="Type a message…"
+              value={input}
+              onChange={handleInputChange}
+              disabled={isLoading}
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className="send-btn"
+              aria-label="Send message"
+              disabled={isLoading || !input?.trim()}
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="19" x2="12" y2="5" />
                 <polyline points="5 12 12 5 19 12" />
               </svg>
             </button>
-          </footer>
+          </form>
         </>
       )}
 

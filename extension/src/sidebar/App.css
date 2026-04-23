@@ -87,6 +87,14 @@
   letter-spacing: 0.3px;
 }
 
+.chat-empty {
+  margin: auto;
+  text-align: center;
+  font-size: 13px;
+  color: #b0ada8;
+  padding: 0 24px;
+}
+
 .message {
   display: flex;
   flex-direction: column;
@@ -144,6 +152,7 @@
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(0, 0, 0, 0.07);
   flex-shrink: 0;
+  margin: 0;
 }
 
 .attach-btn,
@@ -153,7 +162,7 @@
   justify-content: center;
   background: none;
   border: none;
-  cursor: default;
+  cursor: pointer;
   border-radius: 50%;
   padding: 8px;
   color: #8a8880;
@@ -179,9 +188,16 @@
   color: #F0EFE8;
 }
 
+.send-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .input-field {
   flex: 1;
   background: #ffffff;
+  border: none;
+  outline: none;
   border-radius: 20px;
   padding: 10px 16px;
   font-size: 15px;
@@ -193,10 +209,13 @@
   letter-spacing: -0.1px;
 }
 
-.input-placeholder {
+.input-field::placeholder {
   color: #b0ada8;
-  pointer-events: none;
-  user-select: none;
+}
+
+.input-field:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 /* Tab bar */

@@ -5,11 +5,16 @@
     "permissions": [
         "sidePanel"
     ],
+    "host_permissions": [
+        "http://localhost:3000/*",
+        "https://your-vercel-app.vercel.app/*"
+    ],
     "side_panel": {
         "default_path": "index.html"
     },
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "background.js",
+        "type": "module"
     },
     "action" : {
         "default_title": "Alfredo"
